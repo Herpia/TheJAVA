@@ -1,0 +1,34 @@
+//Using Eclipse for Raid
+
+package Day02;
+import java.util.Scanner;
+import java.util.Random;
+public class RSP {
+	public static void main(String[] args) {
+		
+		int com, user;
+		Scanner sc = new Scanner(System.in);
+		Random ra = new Random();
+		
+		while(true) {
+		com = ra.nextInt(3);
+		
+		System.out.println("가위(0): 바위(1): 보(2)");
+		user = sc.nextInt();
+		// user win = 2 vs 0, 0 vs 1, 1 vs 2
+		if((user==0 && com==1) || (user==2 && com == 0) || (user ==2 && com ==1)){
+			System.out.println("User WIN!");
+			System.out.print(com);
+		// else if 00 11 22 is draw
+		} else if ((user==0 && com==0)||(user==1 && com==1)||(user==2 && com==2)) {
+			System.out.println("DRAW_");
+			System.out.println(com);
+		// else com win
+		} else{
+			System.out.println("Com WIN.");
+			System.out.println(com);
+		}
+		}//무한츠쿠요미
+
+	}
+}
