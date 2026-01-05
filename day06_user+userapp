@@ -1,0 +1,98 @@
+//user
+package day06;
+
+public class User {
+    private String id;
+    private String password;
+
+    // 생성자
+    public User(String id, String password) {
+        this.id = id;
+        this.password = password;
+    }
+
+    // Getter (로그인 확인 및 정보 출력 시 사용)
+    public String getId() {
+        return id;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    // 객체의 정보를 { id, password } 형식으로 반환
+    @Override
+    public String toString() {
+        return "{ " + id + ", " + password + " }";
+    }
+}
+
+//userapp
+package day06;
+
+import java.util.Scanner;
+
+public class UserAPP {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        User[] users = new User[100]; // 최대 100명의 정보를 저장할 객체 배열
+        int userCount = 0; // 현재 가입된 사용자 수
+
+        while (true) {
+            System.out.println("============================");
+            System.out.println("1. Sign Up");
+            System.out.println("2. Login");
+            System.out.println("3. Print All Users");
+            System.out.println("4. Exit");
+            System.out.println("============================");
+            System.out.print("번호를 입력하시오: ");
+            
+            int menu = sc.nextInt();
+            sc.nextLine(); // 버퍼 비우기
+
+            if (menu == 1) { // 회원가입
+                System.out.print("Id: ");
+                String id = sc.nextLine();
+                System.out.print("Password: ");
+                String pwd = sc.nextLine();
+
+                // 배열에 새로운 User 객체 생성 및 저장
+                users[userCount] = new User(id, pwd);
+                userCount++;
+                System.out.println("회원가입이 완료되었습니다.");
+
+            } else if (menu == 2) { // 로그인
+                System.out.print("Id: ");
+                String inputId = sc.nextLine();
+                System.out.print("Password: ");
+                String inputPwd = sc.nextLine();
+
+                boolean loginSuccess = false;
+                for (int i = 0; i < userCount; i++) {
+                    if (users[i].getId().equals(inputId) && users[i].getPassword().equals(inputPwd)) {
+                        loginSuccess = true;
+                        break;
+                    }
+                }
+
+                if (loginSuccess) {
+                    System.out.println("로그인 성공!");
+                } else {
+                    System.out.println("아이디 또는 비밀번호가 틀렸습니다.");
+                }
+
+            } else if (menu == 3) { // 모든 사용자 출력
+                for (int i = 0; i < userCount; i++) {
+                    System.out.println(users[i].toString());
+                }
+
+            } else if (menu == 4) { // 종료
+                System.out.println("프로그램을 종료합니다.");
+                break;
+            } else {
+                System.out.println("잘못된 입력입니다.");
+            }
+        }
+        sc.close();
+    }
+}
