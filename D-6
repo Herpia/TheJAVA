@@ -1,4 +1,152 @@
-//user
+package day06;
+
+public class APC extends ArmoredCar {// 3단계-B: 손자 클래스 (보병수송장갑차 - 수송 특화)
+    int maxPassengers; // 최대 탑승 인원
+
+    public void deployTroops() {
+        System.out.println(maxPassengers + "명의 보병이 하차하여 전투를 전개합니다.");
+    }
+}
+package day06;
+
+public class ArmoredCar extends Vehicle {
+    int armorThickness; // 장갑 두께
+
+    public void protect() {
+        System.out.println("두께 " + armorThickness + "mm의 장갑으로 방어를 시작합니다.");
+    }
+}
+package day06;
+
+public class Car extends Vehicle {
+    int seatCount; // 좌석 수
+
+    public void PushAccel() {
+        System.out.println("가속합니다.");
+    }
+}
+package day06;
+
+public class CarAPP {
+	public static void main(String[] args) {
+        // SportsCar 객체 생성
+        SportsCar myCar = new SportsCar();
+        
+        // 1. 데이터 설정 (상속받은 필드들)
+        myCar.model = "Benz AMG GT"; // Vehicle로부터 상속
+        myCar.speed = 120;           // Vehicle로부터 상속
+        myCar.seatCount = 2;         // Car로부터 상속
+        myCar.turbo = true;        // SportsCar 고유 필드
+
+        // 2. 기능 실행
+        System.out.println("=== 스포츠카 정보 출력 ===");
+        System.out.println("모델명: " + myCar.model);
+        System.out.println("좌석수: " + myCar.seatCount);
+        
+        myCar.move();        // 부모(Vehicle) 기능
+        myCar.PushAccel();   // 부모(Car) 기능
+        myCar.setTurbo();  // 본인(SportsCar) 기능
+    }
+}
+
+package day06;
+
+public class MilitaryAPP {
+    public static void main(String[] args) {
+        // Tank 객체 생성
+        Tank K2 = new Tank();
+        K2.model = "K2 흑표";
+        K2.speed = 70;
+        K2.armorThickness = 500;
+        K2.cannonCaliber = 120.0;
+
+        // APC 객체 생성
+        APC K200 = new APC();
+        K200.model = "K200 장갑차";
+        K200.speed = 74;
+        K200.armorThickness = 30;
+        K200.maxPassengers = 12;
+
+        // 실행 확인
+        System.out.println("--- 전차 기동 ---");
+        K2.move();    // Vehicle로부터 상속
+        K2.protect(); // ArmoredCar로부터 상속
+        K2.fire();    // Tank 고유 기능
+
+        System.out.println("\n--- APC 기동 ---");
+        K200.move();
+        K200.protect();
+        K200.deployTroops(); // APC 고유 기능
+    }
+}
+package day06;
+
+public class Person {
+	//추상화
+	String name, addr;
+	int age;
+	
+	//기본생성자
+	public Person() {
+		
+	}
+	
+	//인자생성자
+	public Person(String name, String addr, int age) {
+		this.name = name;
+		this.addr = addr;
+		this.age = age;
+	}
+	
+	//인간정보 출력메소드
+	public void showInfo() {
+		System.out.println("___Person Info___");
+		System.out.println("이름: "+ name);
+		System.out.println("주소: "+ addr );
+		System.out.println("나이: "+ age);
+	}
+	public String getName() {
+		return name;
+	}
+}
+
+package day06;
+import java.util.*;
+public class SchoolAPP {
+	public static void main(String[] args) {
+		Person p1 = new Person();
+		Person p2 = new Person("홍길동", "대전 동구", 20);
+		
+		p1.showInfo();
+		p2.showInfo();
+		
+		ArrayList<Person> alist = new ArrayList<Person>;
+	}
+}
+
+package day06;
+
+public class SportsCar extends Car{
+	boolean turbo;
+	public void setTurbo() {
+		if (turbo) {
+            System.out.println("🚀 [AMG 모드] 터보 부스트 가동! 출력이 급상승합니다.");
+            this.speed += 50;
+            System.out.println("현재 속도: " + speed + "km/h");
+        } else {
+            System.out.println("이 모델은 터보 기능을 지원하지 않습니다.");
+        }
+    }
+}
+package day06;
+
+public class Tank extends ArmoredCar { // 3단계-A: 손자 클래스 (전차 - 화력 특화)
+    double cannonCaliber; // 주포 구경
+
+    public void fire() {
+        System.out.println(cannonCaliber + "mm 주포를 발사합니다! 콰앙!");
+    }
+}
 package day06;
 
 public class User {
@@ -26,8 +174,6 @@ public class User {
         return "{ " + id + ", " + password + " }";
     }
 }
-
-//userapp
 package day06;
 
 import java.util.Scanner;
@@ -94,5 +240,21 @@ public class UserAPP {
             }
         }
         sc.close();
+    }
+}
+package day06;
+
+public class Vehicle {
+	String model;
+	int speed;
+	
+	void setSpeed(int speed) {
+		this.speed = speed;
+	}
+	void turn() {
+		System.out.println("턴");
+	}
+	void move() {
+        System.out.println(model + "이(가) 시속 " + speed + "km로 이동합니다.");
     }
 }
