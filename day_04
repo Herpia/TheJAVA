@@ -1,0 +1,340 @@
+public class Account {
+
+    // 필드 은닉화 + 추상화
+    private int regNumber;
+    private String name;
+    private int balance;
+
+    // 기본 생성자
+    public Account() {}
+
+    // 인자 생성자
+    public Account(int reg, String name, int balance) {
+        this.regNumber = reg;
+        this.name = name;
+        this.balance = balance;
+    }
+
+    // setter method (설정자)
+    public void setRegNumber(int reg) {
+        this.regNumber = regNumber;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setBalance(int balance) {
+        if (balance >= 0) {     // 유효성 검사
+            this.balance = balance;
+        }
+    }
+
+    // getter method (접근자)
+    public int getRegNumber() {
+        return regNumber;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getBalance() {
+        return balance;
+    }
+
+    // 테스트용 main
+    public static void main(String[] args) {
+        Account obj = new Account(123456789, "홍길동", 10000);
+
+        System.out.println("하나계좌");
+        System.out.println("계좌번호: 123-456-789");
+        System.out.println("이름은 " + obj.getName() +
+                " 통장잔고는 " + obj.getBalance() + "원입니다.");
+    }
+}
+public class Circle {
+	double radius;
+	String color;
+	
+	double printArea() {
+		return 3.14*radius*radius;
+	}
+	void setRadius(double ra) {
+		radius = ra;
+	}
+}
+
+import java.util.ArrayList;
+
+public class ClassTst {
+    public static void main(String[] args) {
+        Circle obj;
+        TV obj2;
+
+        obj = new Circle();
+        obj2 = new TV();   
+        Circle obj3 = new Circle();
+        TV tv1 = new TV(5, 0, true);
+
+        obj.radius = 12.5;
+        obj.color = "빨강";
+        obj3.setRadius(13.5);
+
+        double area = obj.printArea();
+        System.out.println("반지름이 " + obj.radius + "인 원의 면적은 " + area + "입니다.");
+
+        //obj2.chanel = 9;
+        //obj2.volume = 1;
+        obj2.setChanel(9);
+        obj2.setVolume(1);
+
+        obj2.changeChanel(13);
+        obj2.volume(5);
+        obj2.turnOff();
+
+        ArrayList<TV> alist = new ArrayList<>();
+        ArrayList<Circle> alist2 = new ArrayList<>();
+
+        alist.add(obj2);
+        alist2.add(obj);
+        alist2.add(obj3);
+
+        for (TV t : alist) {
+            System.out.println(t.getChanel());
+        }
+
+        for (Circle c : alist2) {
+            System.out.println(c.radius);
+        }
+    }
+}
+
+public class Human {
+    private String name;
+    private String gender;
+    private int age;
+    private boolean onoff;
+
+    public Human() {}
+
+    // 인자 생성자
+    public Human(String name, int age, String gender, boolean onOff) {
+        this.name = name;
+        this.age = age;
+        this.gender = gender;
+        this.onoff = onOff;
+    }
+
+    /* Getter 메소드 */
+    public String getName() {
+        return name;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public boolean isOnoff() {
+        return onoff;
+    }
+
+    // Setter 메소드
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public void setAge(int age) {
+        if (age >= 0) {          // 유효성 검사(선택)
+            this.age = age;
+        }
+    }
+
+    public void isOnoff(boolean onoff) {
+        this.onoff = onoff;
+    }
+
+    /* 기존 기능 메소드 */
+    void lifeOn() {
+        onoff = true;
+        System.out.println("생존");
+    }
+
+    void lifeOff() {
+        onoff = false;
+        System.out.println("사망");
+    }
+
+    void printName() {
+        System.out.println("이름: " + name);
+    }
+
+    void printGender() {
+        System.out.println("성별: " + gender);
+    }
+
+    void changeAge(int a) {
+        setAge(a);   // setter 사용 (권장)
+        System.out.println("나이: " + age);
+    }
+}
+
+/* import java.util.ArrayList;
+
+public class JobAPP {
+
+    public static void main(String[] args) {
+
+        Human human1 = new Human("김xx", 30, "남자", true);
+        Human human2 = new Human("박xx", 25, "여자", true);
+
+        ArrayList<Human> alist = new ArrayList<>();
+
+        alist.add(human1);
+        alist.add(human2);
+
+        // 출력
+        for (Human h : alist) {
+            h.printName();
+            h.printGender();
+            h.changeAge(h.age);
+            System.out.println("------");
+        }
+    }
+} */
+import java.util.ArrayList;
+
+public class JobAPP {
+
+    public static void main(String[] args) {
+
+        Human human1 = new Human("김xx", 30, "남자", true);
+        Human human2 = new Human("박xx", 25, "여자", true);
+
+        ArrayList<Human> alist = new ArrayList<>();
+
+        alist.add(human1);
+        alist.add(human2);
+
+        // 출력 (getter / setter 사용)
+        for (Human h : alist) {
+            System.out.println("이름: " + h.getName());
+            System.out.println("성별: " + h.getGender());
+            System.out.println("나이: " + h.getAge());
+
+            // setter 사용 예
+            h.setAge(h.getAge());   // 값 유지(우회 접근 예시)
+
+            System.out.println("------");
+        }
+    }
+}
+
+
+
+public class Npz {
+	public static void main(String[]args) {
+		
+	Pizza pizza = new Pizza();
+	Pizza pizza1 = new Pizza();
+	Pizza pizza2 = new Pizza(10, "페퍼로니피자");
+	
+	pizza1.type = "치즈피자";
+	pizza1.size = 5;
+	
+	System.out.println(pizza.type + pizza.size);
+	System.out.println(pizza1.type + pizza.size);
+	System.out.println(pizza2.type + pizza.size);
+	
+	}
+	
+
+}
+
+public class Pizza
+
+{ 
+		int size;
+		String type;
+		
+		public Pizza() {
+				size = 12;
+				type = "슈퍼슈프림";
+		}
+		public Pizza(int s, String t) {
+				size = s;
+				type = t;
+		}
+		public static void main(String[] args) {
+				Pizza obj1 = new Pizza();
+				System.out.println("("+obj1.type+ " , "+obj1.size+",)");
+				
+				Pizza obj2 = new Pizza(24, "포테이토");
+				System.out.println("("+obj2.type+ " , "+obj2.size+",)");
+		}
+}
+public class TV {
+	//데이터 은닉 private(캡슐화) Set Get 메소드로 접근간으
+    private int chanel;
+    private int volume;
+    private boolean onOff;
+    //기본 생성자
+    public TV() {}
+    
+    //인자 생성자...(int c, int v, boolean on)
+    public TV(int chanel, int volumne, boolean onOff) {
+    	this.chanel = chanel;
+    	this.volume = volume;
+    	this.onOff = onOff;
+    }
+    
+    // setter 메소드(은닉화접근
+    void setChanel(int chanel) {
+    	this.chanel = chanel;
+    }
+    void setVolume(int volume) {
+    	this.volume = volume;
+    }
+    void setOnOff(int onoff) {
+    	this.onOff = onOff;
+    }
+    
+    //getter 메소드(은닉화접근
+    int getChanel() {
+    	return chanel;
+    }
+    int getVolume() {
+    	return volume;
+    }
+    boolean isOnOff() {
+    	return onOff;
+    }
+    
+    void turnOn() {
+        onOff = true;
+        System.out.println("전원 켜짐");
+    }
+
+    void turnOff() {
+        onOff = false;
+        System.out.println("전원 꺼짐");
+    }
+
+    void changeChanel(int c) {
+        chanel = c;
+        System.out.println("채널 변경: " + chanel);
+    }
+
+    void volume(int v) {
+        volume++;
+        System.out.println("볼륨조절: " + volume);
+    }
+}
