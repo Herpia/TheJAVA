@@ -1,0 +1,182 @@
+
+public class Array {
+	public static void main(String[]args) {
+		int[]s = new int[10];
+		for(int i=0; i < s.length; i++) {
+			s[i] = i;
+		}
+		for(int i=0; i < s.length; i++) {
+			System.out.print(s[i]+"");
+		}
+	}
+}
+
+public class ConTst {
+   public static void main(String[] args) {
+      for (int i = 1; i <= 10; ++i) {      
+         if (i%3 == 0)
+            continue;
+         System.out.print(i+" ");
+      }   
+   }
+}
+import java.util.*;
+public class Factorial {
+	public static void main(String[]args) {
+		long fact =1;
+		int n;
+		
+		System.out.println("정수를 입력: ");
+		Scanner scan = new Scanner(System.in);
+		n = scan.nextInt();
+		
+		for(int i=1; i<=n; i++)
+			fact = fact *i;
+		
+		System.out.printf("%d! = %d", n, fact);
+		}
+
+}
+
+import java.util.*;
+
+public class Ggd {
+	public static void main(String[] args) {
+		int n;
+		int i=1;
+		System.out.print("출력 구구단: ");
+		Scanner scan = new Scanner(System.in);
+		n = scan.nextInt();
+		while (i<10) {
+			System.out.println(n +"*"+ i +"="+ n * i);
+			i++;
+		}
+		System.out.print("계산완료");
+	}
+}
+import java.util.*;
+
+public class Ggdadv {
+	public static void main(String[] args) {
+		int i=1;
+		int dan = 1;
+		System.out.println("구구단");
+		Scanner scan = new Scanner(System.in);
+		while(dan<=9) {
+			System.out.println(dan);
+			
+		while (i<10) {
+			System.out.println(dan +"*"+ i +"="+ (dan * i));
+			i++;
+			}
+		i=1;
+		dan++;
+		}
+		System.out.print("정리완료");
+	}
+}
+
+public class Loop {
+	public static void main(String[] args) {
+		int i=0;
+		while (i<5) {
+			System.out.println("환영합니다");
+			i++;
+		}
+		System.out.print("반복 종료");
+	}
+}
+import java.util.*;
+
+public class NTG {
+    public static void main(String[] args) {
+        // 1. 초기 설정
+        int com, user;
+        int count = 0;
+        Random rd = new Random();
+        Scanner sc = new Scanner(System.in); // Scanner를 루프 밖으로 이동
+
+        com = rd.nextInt(100) + 1; // 1부터 100까지 난수 생성
+
+        // System.out.println("정답(컨닝용): " + com); // 필요할 때만 주석 해제
+
+        do {
+            // 2. USER 입력
+            System.out.print("1~100 사이의 정답 추측하기: ");
+            user = sc.nextInt();
+            count++; // 시도할 때마다 카운트 증가
+
+            // 3. 비교 판정
+            if (com > user) {
+                System.out.println("더 높게 불러보세요! (UP)");
+            } else if (com < user) {
+                System.out.println("더 낮게 불러보세요! (DOWN)");
+            } else {
+                System.out.println("축하합니다! 정답입니다.");
+            }
+            
+        } while (com != user); // 정답이 아닐 때까지 반복
+
+        // 4. 결과 출력
+        System.out.println("총 시도 횟수: " + count + "회");
+        sc.close(); // Scanner 닫기
+    	}
+}
+
+import java.util.Scanner;
+import java.util.Random;
+public class RSP {
+	public static void main(String[] args) {
+		
+		int com, user;
+		Scanner sc = new Scanner(System.in);
+		Random ra = new Random();
+		
+		while(true) {
+		com = ra.nextInt(3);
+		
+		System.out.println("가위(0): 바위(1): 보(2)");
+		user = sc.nextInt();
+		// user win = 2 vs 0, 0 vs 1, 1 vs 2
+		if((user==0 && com==1) || (user==2 && com == 0) || (user ==2 && com ==1)){
+			System.out.println("User WIN!");
+			System.out.print(com);
+		// else if 00 11 22 is draw
+		} else if ((user==0 && com==0)||(user==1 && com==1)||(user==2 && com==2)) {
+			System.out.println("DRAW_");
+			System.out.println(com);
+		// else com win
+		} else{
+			System.out.println("Com WIN.");
+			System.out.println(com);
+		}
+		}//무한츠쿠요미
+
+	}
+}
+
+import java.util.*;
+public class Star {
+	public static void main(String[]args) {
+	for(int y=0; y <5; y++) {
+		for(int x=0; x <10; x++) 
+			System.out.print("*");
+			
+		System.out.println("");
+	}
+	}
+}
+
+public class tst{
+	//for(초기;조건;증감식){}
+	
+	public static void main(String[]args) {
+		int i, j;
+		for(i=2;i<=9;i++) {
+			System.out.println(i+"단--");
+			for(j=1;j<=9;i++) {
+				System.out.println(i +"*"+ j +"="+ (i * j));
+			}
+		}
+	}
+}
