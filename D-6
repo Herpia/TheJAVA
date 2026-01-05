@@ -45,7 +45,7 @@ public class UserAPP {
             System.out.println("3. Print All Users");
             System.out.println("4. Exit");
             System.out.println("============================");
-            System.out.print("번호를 입력하시오: ");
+            System.out.print("절차를 선택: ");
             
             int menu = sc.nextInt();
             sc.nextLine(); // 버퍼 비우기
@@ -59,7 +59,7 @@ public class UserAPP {
                 // 배열에 새로운 User 객체 생성 및 저장
                 users[userCount] = new User(id, pwd);
                 userCount++;
-                System.out.println("회원가입이 완료되었습니다.");
+                System.out.println("회원가입이 완료");
 
             } else if (menu == 2) { // 로그인
                 System.out.print("Id: ");
@@ -76,9 +76,9 @@ public class UserAPP {
                 }
 
                 if (loginSuccess) {
-                    System.out.println("로그인 성공!");
+                    System.out.println("로그인 완료");
                 } else {
-                    System.out.println("아이디 또는 비밀번호가 틀렸습니다.");
+                    System.out.println("아이디 또는 비밀번호 오류");
                 }
 
             } else if (menu == 3) { // 모든 사용자 출력
@@ -87,10 +87,10 @@ public class UserAPP {
                 }
 
             } else if (menu == 4) { // 종료
-                System.out.println("프로그램을 종료합니다.");
+                System.out.println("프로그램을 종료");
                 break;
             } else {
-                System.out.println("잘못된 입력입니다.");
+                System.out.println("잘못된 입력");
             }
         }
         sc.close();
