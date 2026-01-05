@@ -111,19 +111,26 @@ public class Person {
 }
 
 package day06;
-import java.util.*;
-public class SchoolAPP {
-	public static void main(String[] args) {
-		Person p1 = new Person();
-		Person p2 = new Person("홍길동", "대전 동구", 20);
-		
-		p1.showInfo();
-		p2.showInfo();
-		
-		ArrayList<Person> alist = new ArrayList<Person>;
-	}
-}
 
+public class SchoolAPP {
+    public static void main(String[] args) {
+        // 1. 학생 객체 생성
+        Student s = new Student("홍길동", "서울시 강남구", 20, "20240001");
+        
+        // 2. 교사 객체 생성
+        Teacher t = new Teacher("김철수", "경기도 성남시", 45, "Java 프로그래밍");
+        
+        // 3. 직원 객체 생성
+        Staff st = new Staff("이영희", "인천시 남동구", 35, "학사관리팀");
+
+        // 정보 출력
+        s.showInfo();
+        System.out.println("--------------------");
+        t.showInfo();
+        System.out.println("--------------------");
+        st.showInfo();
+    }
+}
 package day06;
 
 public class SportsCar extends Car{
@@ -140,11 +147,62 @@ public class SportsCar extends Car{
 }
 package day06;
 
+public class Staff extends Person {
+    String dept;
+
+    public Staff(String name, String addr, int age, String dept) {
+        super(name, addr, age);
+        this.dept = dept;
+    }
+
+    @Override
+    public void showInfo() {
+        super.showInfo();
+        System.out.println("담당부서: " + dept);
+        System.out.println("특징: 학교 운영을 지원하는 행정직원입니다.");
+    }
+}
+package day06;
+
+public class Student extends Person {
+    String studentId;
+
+    public Student(String name, String addr, int age, String studentId) {
+        super(name, addr, age); // 부모 생성자 호출
+        this.studentId = studentId;
+    }
+
+    @Override
+    public void showInfo() {
+        super.showInfo(); // 부모의 출력 기능 활용
+        System.out.println("학번: " + studentId);
+        System.out.println("특징: 공부 중인 학생입니다.");
+    }
+}
+package day06;
+
 public class Tank extends ArmoredCar { // 3단계-A: 손자 클래스 (전차 - 화력 특화)
     double cannonCaliber; // 주포 구경
 
     public void fire() {
         System.out.println(cannonCaliber + "mm 주포를 발사합니다! 콰앙!");
+    }
+}
+package day06;
+
+public class Teacher extends Person {
+    String subject;
+
+    public Teacher(String name, String addr, int age, String subject) {
+        super(name, addr, age);
+        this.subject = subject;
+    }
+
+    @Override
+    public void showInfo() {
+        super.showInfo();
+        System.out.println("담당과목: " + subject);
+        System.out.println("특징: 학생들을 가르치는 전문가입니다.");
     }
 }
 package day06;
