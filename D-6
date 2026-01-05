@@ -15,6 +15,12 @@ public class ArmoredCar extends Vehicle {
     public void protect() {
         System.out.println("두께 " + armorThickness + "mm의 장갑으로 방어를 시작합니다.");
     }
+
+	@Override
+	void setSpeed(int speed) {
+		// TODO Auto-generated method stub
+		System.out.println(speed + "로 설정하고 달린다.");
+	}
 }
 package day06;
 
@@ -24,6 +30,12 @@ public class Car extends Vehicle {
     public void PushAccel() {
         System.out.println("가속합니다.");
     }
+
+	@Override
+	void setSpeed(int speed) {
+		// TODO Auto-generated method stub 추상 클래스 하위 클래스에서는 오버라이드가 필수적
+		System.out.println(speed + "로 설정하고 달린다.");
+	}
 }
 package day06;
 
@@ -115,17 +127,20 @@ package day06;
 public class SchoolAPP {
     public static void main(String[] args) {
         // 1. 학생 객체 생성
-        Student s = new Student("홍길동", "서울시 강남구", 20, "20240001");
+        Student s1 = new Student("김선우", "대전시 강남구", 27, "20190001");
+        Student s2 = new Student("박아무개", "대전시 강북구", 27, "20190002");
         
         // 2. 교사 객체 생성
-        Teacher t = new Teacher("김철수", "경기도 성남시", 45, "Java 프로그래밍");
+        Teacher t = new Teacher("최진우", "대전시 은평구", 45, "철권 게이밍");
         
         // 3. 직원 객체 생성
-        Staff st = new Staff("이영희", "인천시 남동구", 35, "학사관리팀");
+        Staff st = new Staff("타지리", "일본", 56, "학사관리팀");
 
         // 정보 출력
-        s.showInfo();
+        s1.showInfo();
         System.out.println("--------------------");
+        s2.showInfo();
+        System.out.println("--------------------");     
         t.showInfo();
         System.out.println("--------------------");
         st.showInfo();
@@ -302,13 +317,13 @@ public class UserAPP {
 }
 package day06;
 
-public class Vehicle {
+public abstract class Vehicle {
 	String model;
 	int speed;
 	
-	void setSpeed(int speed) {
-		this.speed = speed;
-	}
+	//추상메소드
+	abstract void setSpeed(int speed);
+	
 	void turn() {
 		System.out.println("턴");
 	}
