@@ -1,0 +1,182 @@
+package day11;
+
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Scanner;
+
+public class ByteStream {
+    public static void main(String[] args) throws IOException {
+        Scanner scan = new Scanner(System.in);
+        
+        System.out.print("원본 파일 이름을 입력하시오: ");
+        String inputFileName = scan.next();
+        System.out.print("복사 파일 이름을 입력하시오: ");
+        String outputFileName = scan.next();
+        
+        // 3. try-with-resources 구문을 사용하여 스트림을 자동으로 닫아줍니다.
+        try (InputStream inputStream = new FileInputStream(inputFileName);
+             OutputStream outputStream = new FileOutputStream(outputFileName)) {
+            
+            int c;
+            // 한 바이트씩 읽어서 -1(파일의 끝)이 아닐 때까지 반복
+            while ((c = inputStream.read()) != -1) {
+                outputStream.write(c);
+            }
+            
+            System.out.println(inputFileName + "을 " + outputFileName + "로 복사하였습니다.");
+            
+        } catch (IOException e) {
+            // 파일이 없거나 읽기 권한이 없을 때 발생하는 예외 처리
+            System.out.println("오류 발생: " + e.getMessage());
+        } finally {
+            scan.close(); // 스캐너 닫기
+        }
+    }
+}
+package day11;
+import java.io.FileReader;
+
+public class FileReaderExample{
+	public static void main(String args[]) throws Exception { // (1)
+		FileReader fr = new FileReader("C:\\test.txt"); // (2)
+		int ch;
+		while ((ch = fr.read()) != -1)    
+			System.out.print((char) ch);
+		fr.close();     
+		// (4)
+		}
+}
+package day11;
+
+import java.io.FileReader;
+import java.io.IOException;
+public class FRex2{
+ public static void main(String args[]) throws Exception {
+	 try (FileReader fr = new FileReader("C:\\test.txt")) {
+		 int ch;
+		 while ((ch = fr.read()) != -1)
+			 System.out.print((char) ch);
+		 } catch (IOException e) {
+			 e.printStackTrace();
+			 }
+	 }
+ }
+package day11;
+
+import java.io.*;
+import java.net.*;
+import java.util.Scanner;
+
+public class MyClient {
+    Socket sock;
+    PrintWriter out; // 서버로 보낼 스트림
+    
+    public MyClient() {
+        try {
+            // 1. 서버에 접속 (IP: localhost는 내 컴퓨터, Port: 9999)
+            sock = new Socket("localhost", 9999);
+            System.out.println("서버와 접속 완료.");
+
+            // 2. 서버로 데이터를 보낼 통로 개설
+            out = new PrintWriter(sock.getOutputStream(), true);
+            
+            // 3. 키보드로 입력받아 서버에 전송
+            Scanner sc = new Scanner(System.in);
+            System.out.print("서버에 보낼 메시지: ");
+            String msg = sc.nextLine();
+            
+            out.println(msg);
+            System.out.println("서버로 메시지를 전송했습니다.");
+
+        } catch (IOException e) {
+            System.out.println("서버 접속 실패: " + e.getMessage());
+        } finally {
+            try {
+                if(sock != null) sock.close();
+            } catch (IOException e) { e.printStackTrace(); }
+        }
+    }
+
+    public static void main(String[] args) {
+        new MyClient();
+    }
+}
+package day11;
+
+import java.io.*;
+import java.net.*;
+
+public class MyServer {
+    ServerSocket ser;
+    Socket sock;
+    BufferedReader in; // 클라이언트로부터 읽어올 스트림
+
+    public MyServer() {
+        try {
+            ser = new ServerSocket(9999);
+            System.out.println("--- 서버 대기중 (Port: 9999) ---");
+            
+            sock = ser.accept();
+            System.out.println("클라이언트 연결 성공: " + sock.getInetAddress());
+
+            // 클라이언트가 보낸 메시지 읽기
+            in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+            String clientMsg = in.readLine();
+            
+            System.out.println("클라이언트 메시지: " + clientMsg);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if(sock != null) sock.close();
+                if(ser != null) ser.close();
+            } catch (IOException e) { e.printStackTrace(); }
+        }
+    }
+
+    public static void main(String[] args) {
+        new MyServer(); // 서버 실행
+    }
+}
+package day11;
+
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Scanner;
+
+public class TxtFileCopy {
+    public static void main(String[] args) {
+        Scanner scan = new Scanner(System.in);
+
+        System.out.print("복사할 원본 .txt 파일명: ");
+        String input = scan.next();
+        System.out.print("생성할 복사 .txt 파일명: ");
+        String output = scan.next();
+
+        // .txt 확장자가 입력되지 않았을 경우 자동으로 붙여주는 센스
+        if (!input.endsWith(".txt")) input += ".txt";
+        if (!output.endsWith(".txt")) output += ".txt";
+
+        // FileReader / FileWriter 사용
+        try (FileReader fr = new FileReader(input);
+             FileWriter fw = new FileWriter(output)) {
+
+            int data;
+            while ((data = fr.read()) != -1) {
+                fw.write(data);
+            }
+            System.out.println("✅ [" + input + "] 파일을 [" + output + "]로 성공적으로 복제했습니다.");
+
+        } catch (IOException e) {
+            System.out.println("❌ 복제 실패: " + e.getMessage());
+            System.out.println("현재 파일 탐색 위치: " + new java.io.File(".").getAbsolutePath());
+        } finally {
+            scan.close();
+        }
+    }
+}
