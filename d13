@@ -1,0 +1,335 @@
+package day13;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class MBDAO {
+
+    private final String url = "jdbc:mysql://localhost:3306/mtdb?serverTimezone=Asia/Seoul";
+    private final String id = "root";
+    private final String pwd = "qwer1234";
+
+    public MBDAO() {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver"); // 드라이버 로딩 1회
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("JDBC Driver 로딩 실패", e);
+        }
+    }
+
+    private Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(url, id, pwd);
+    }
+
+    // member 테이블 전체 조회
+    public List<MBDTO> selectAll() {
+        String sql = "SELECT id, username, dept, birth, email FROM member";
+        List<MBDTO> list = new ArrayList<>();
+
+        // try-with-resources: close 자동 처리
+        try (Connection con = getConnection();
+             PreparedStatement psmt = con.prepareStatement(sql);
+             ResultSet rs = psmt.executeQuery()) {
+
+            while (rs.next()) {
+                MBDTO dto = new MBDTO();
+                dto.setId(rs.getInt("id"));
+                dto.setUsername(rs.getString("username"));
+                dto.setDept(rs.getString("dept"));
+                dto.setBirth(rs.getString("birth"));   // DATE면 rs.getDate("birth")도 가능
+                dto.setEmail(rs.getString("email"));
+
+                list.add(dto);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
+    // 특정 이름(username)으로 조회 (네가 원했던 기능)
+    public List<MBDTO> selectByName(String name) {
+        String sql = "SELECT id, username, dept, birth, email FROM member WHERE username = ?";
+        List<MBDTO> list = new ArrayList<>();
+
+        try (Connection con = getConnection();
+             PreparedStatement psmt = con.prepareStatement(sql)) {
+
+            psmt.setString(1, name);
+
+            try (ResultSet rs = psmt.executeQuery()) {
+                while (rs.next()) {
+                    MBDTO dto = new MBDTO(
+                            rs.getInt("id"),
+                            rs.getString("username"),
+                            rs.getString("dept"),
+                            rs.getString("birth"),
+                            rs.getString("email")
+                    );
+                    list.add(dto);
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+}
+
+package day13;
+
+public class MBDTO {
+    private int id;
+    private String username;
+    private String dept;
+    private String birth;   // DATE면 java.sql.Date로 바꿔도 됨
+    private String email;
+
+    public MBDTO() {}
+
+    public MBDTO(int id, String username, String dept, String birth, String email) {
+        this.id = id;
+        this.username = username;
+        this.dept = dept;
+        this.birth = birth;
+        this.email = email;
+    }
+
+    public int getId() {
+        return id;
+    }
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getDept() {
+        return dept;
+    }
+    public void setDept(String dept) {
+        this.dept = dept;
+    }
+
+    public String getBirth() {
+        return birth;
+    }
+    public void setBirth(String birth) {
+        this.birth = birth;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    @Override
+    public String toString() {
+        return "=== Student INF ===\n"
+                + "ID    : " + id + "\n"
+                + "NAME  : " + username + "\n"
+                + "MAJOR : " + dept + "\n"
+                + "BIRTH : " + birth + "\n"
+                + "EMAIL : " + email + "\n";
+    }
+}
+
+package day13;
+
+import java.util.List;
+
+public class MBTST{
+    public static void main(String[] args) {
+
+        MBDAO dao = new MBDAO();
+
+        // 1) 전체 조회
+        System.out.println("[전체 조회]");
+        List<MBDTO> all = dao.selectAll();
+
+        if (all.isEmpty()) {
+            System.out.println("member 테이블에 조회된 데이터가 없습니다.");
+        } else {
+            for (MBDTO dto : all) {
+                System.out.println(dto);
+            }
+        }
+
+        // 2) 특정 이름 조회 (예: "홍길동")
+        System.out.println("[이름으로 조회]");
+        String targetName = "홍길동";
+        List<MBDTO> byName = dao.selectByName(targetName);
+
+        if (byName.isEmpty()) {
+            System.out.println("username = " + targetName + " 인 데이터가 없습니다.");
+        } else {
+            for (MBDTO dto : byName) {
+                System.out.println(dto);
+            }
+        }
+    }
+}
+
+package day13;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+public class MMDB {
+
+    public static void main(String[] args) {
+
+        String url = "jdbc:mysql://localhost:3306/mtdb?serverTimezone=Asia/Seoul";
+        String id = "root";
+        String pwd = "qwer1234";
+
+        // 1. JDBC driver loading
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
+            // 2. Database connect
+            try {
+                Connection con = DriverManager.getConnection(url, id, pwd);
+
+                // 3. Datachange (SELECT)
+                String sql = "SELECT * FROM member";
+                PreparedStatement psmt = con.prepareStatement(sql);
+
+                // 4. statement 전송 5. 결과 받기
+                ResultSet rs = psmt.executeQuery();
+
+                int rid;
+                String uname, udpt, da, uemail;
+
+                boolean hasData = false;
+
+                while (rs.next()) {
+                    hasData = true;
+
+                    rid = rs.getInt("id");
+                    uname = rs.getString("username");
+                    udpt = rs.getString("dept");
+                    da = rs.getString("birth");   // DATE 타입이면 getDate()도 가능
+                    uemail = rs.getString("email");
+
+                    System.out.println("=== Student INF ===");
+                    System.out.println("ID    : " + rid);
+                    System.out.println("NAME  : " + uname);
+                    System.out.println("MAJOR : " + udpt);
+                    System.out.println("BIRTH : " + da);
+                    System.out.println("EMAIL : " + uemail);
+                    System.out.println();
+                }
+
+                if (!hasData) {
+                    System.out.println("member 테이블에 조회된 데이터가 없습니다.");
+                }
+
+                rs.close();
+                psmt.close();
+                con.close();
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+package day13;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+public class MMDBS {
+
+    public static void main(String[] args) {
+
+        String url = "jdbc:mysql://localhost:3306/mtdb";
+        String id = "root";
+        String pwd = "qwer1234";
+
+        // 조회할 학생 이름
+        String searchName = "박xx";
+
+        // 1. JDBC driver loading
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
+            // 2. Database connect
+            try {
+                Connection con = DriverManager.getConnection(url, id, pwd);
+
+                // 3. Datachange (특정 이름 조회)
+                String sql = "SELECT * FROM member WHERE username = ?";
+                PreparedStatement psmt = con.prepareStatement(sql);
+
+                // ★ 파라미터 바인딩
+                psmt.setString(1, searchName);
+
+                // 4. statement 전송 5. 결과 받기
+                ResultSet rs = psmt.executeQuery();
+
+                boolean hasData = false;
+
+                while (rs.next()) {
+                    hasData = true;
+
+                    int rid = rs.getInt("id");
+                    String uname = rs.getString("username");
+                    String udpt = rs.getString("dept");
+                    String da = rs.getString("birth");
+                    String uemail = rs.getString("email");
+
+                    System.out.println("=== Student INF ===");
+                    System.out.println("ID    : " + rid);
+                    System.out.println("NAME  : " + uname);
+                    System.out.println("MAJOR : " + udpt);
+                    System.out.println("BIRTH : " + da);
+                    System.out.println("EMAIL : " + uemail);
+                    System.out.println();
+                }
+
+                if (!hasData) {
+                    System.out.println(searchName + " 학생 정보가 존재하지 않습니다.");
+                }
+
+                rs.close();
+                psmt.close();
+                con.close();
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+}
