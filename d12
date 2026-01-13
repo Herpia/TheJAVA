@@ -1,0 +1,285 @@
+package day12;
+
+import java.io.*;
+import java.net.*;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
+public class ChatClient extends JFrame implements ActionListener, Runnable {
+
+    private JTextField enter;
+    private JTextArea display;
+    private PrintWriter output;
+    private BufferedReader input;
+    private Socket s; // 클라이언트는 ServerSocket이 필요 없음
+    private String message = "";
+
+    public ChatClient() {
+        setTitle("-------------Welcome ChatClient ver 1.0----------------");
+
+        enter = new JTextField();
+        enter.setEnabled(false); // 연결 전까지 입력 불가
+        enter.addActionListener(this);
+        add(enter, BorderLayout.NORTH);
+
+        display = new JTextArea();
+        display.setEditable(false);
+        add(new JScrollPane(display), BorderLayout.CENTER);
+
+        setSize(300, 300);
+        setVisible(true);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+        // 서버 접속 및 통신을 위한 스레드 시작
+        Thread t = new Thread(this);
+        t.start();
+    }
+
+    @Override
+    public void run() {
+        try {
+            // "127.0.0.1"은 로컬 호스트(내 컴퓨터)를 의미합니다.
+            display.append("서버에 접속 시도 중...\n");
+            s = new Socket("127.0.0.1", 7777); 
+            
+            display.append("서버에 연결되었습니다!\n");
+            enter.setEnabled(true); // 연결 성공 시 입력창 활성화
+
+            output = new PrintWriter(s.getOutputStream(), true);
+            input = new BufferedReader(new InputStreamReader(s.getInputStream()));
+
+            // 서버로부터 오는 메시지를 무한 루프로 대기
+            String serverMsg = "";
+            while ((serverMsg = input.readLine()) != null) {
+                display.append("\n서버 >>> " + serverMsg);
+                // 자동 스크롤 하단 고정
+                display.setCaretPosition(display.getDocument().getLength());
+            }
+
+        } catch (IOException e) {
+            display.append("\n서버와 연결이 끊어졌거나 서버가 실행 중이 아닙니다.");
+        } finally {
+            try {
+                if (s != null) s.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        message = e.getActionCommand();
+        if (output != null) {
+            output.println(message); // 서버로 전송
+            display.append("\n클라이언트 >>> " + message);
+            enter.setText("");
+        }
+
+        if (message.contains("GoodBye")) {
+            System.exit(0);
+        }
+    }
+
+    public static void main(String[] args) {
+        new ChatClient();
+    }
+}
+package day12;
+
+import java.io.*;
+import java.net.*;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
+// Runnable 인터페이스를 추가로 구현(implements)합니다.
+public class ChatServer extends JFrame implements ActionListener, Runnable {
+	
+	JTextField enter;
+	JTextArea display;
+	PrintWriter output;
+	BufferedReader input;
+	ServerSocket ss; 
+	Socket s;   
+	String message = "";
+	
+	public ChatServer() {
+		setTitle("-------------Welcome ChatServer ver 1.0----------------");
+		
+		enter = new JTextField();
+		enter.setEnabled(false);
+		enter.addActionListener(this); 
+		add(enter, BorderLayout.NORTH);
+		
+		display = new JTextArea();
+		display.setEditable(false); 
+		add(new JScrollPane(display), BorderLayout.CENTER);
+		
+		setSize(300, 300);
+		setVisible(true);
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		
+		// 스레드 생성 시 this(ChatServer 객체 자신)를 전달하여 run()을 실행합니다.
+		Thread t = new Thread(this);
+		t.start();
+	}
+
+	// 기존 startServer 로직을 오버라이드된 run 메서드로 이동
+	@Override
+	public void run() {
+		try {
+			ss = new ServerSocket(7777); 
+			display.append("서버: 클라이언트를 기다리는 중...\n");
+			
+			s = ss.accept(); 
+			display.append("서버: " + s.getInetAddress().getHostName() + " 연결됨!\n");
+			enter.setEnabled(true); 
+			
+			output = new PrintWriter(s.getOutputStream(), true);
+			input = new BufferedReader(new InputStreamReader(s.getInputStream()));
+			
+			String clientMsg = "";
+			while ((clientMsg = input.readLine()) != null) {
+				display.append("\n클라이언트 >>> " + clientMsg);
+			}
+			
+		} catch (IOException e) {
+			display.append("\n연결 종료됨.");
+		}
+	}
+	
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		message = e.getActionCommand();
+		if (output != null) {
+			output.println(message); 
+			display.append("\n서버 >>> " + message);
+			enter.setText("");
+		}
+		
+		if (message.contains("GoodBye")) {
+			try {
+				if (s != null) s.close();
+				if (ss != null) ss.close();
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			}
+			System.exit(0);
+		}
+	}
+
+	public static void main(String[] args) {
+		new ChatServer();
+	}
+}
+package day12;
+public class CountDownTest {
+
+    class MyThread extends Thread {
+        @Override
+        public void run() {
+            for (int i = 10; i >= 0; i--) {
+                try {
+                    // 1초 대기
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                
+                // GUI 대신 콘솔에 출력
+                // \r은 커서를 줄 맨 앞으로 보내서 숫자가 같은 자리에서 바뀌게 합니다.
+                System.out.print("\r카운트다운: " + i + "   ");
+            }
+            System.out.println("\n종료되었습니다.");
+        }
+    }
+
+    // 생성자: 스레드 시작
+    public CountDownTest() {
+        System.out.println("카운트다운을 시작합니다.");
+        
+        // 스레드 객체 생성 및 실행
+        MyThread t = new MyThread();
+        t.start();
+    }
+
+    public static void main(String[] args) {
+        // 프로그램 시작점
+        new CountDownTest();
+    }
+}
+package day12;
+
+// 1. Runnable 인터페이스를 구현해야 합니다.
+public class MRunnable implements Runnable {
+    
+    String name;
+
+    // 생성자를 통해 스레드 이름을 받을 수 있도록 설정
+    public MRunnable(String name) {
+        this.name = name;
+    }
+
+    // 2. 반드시 public으로 선언해야 하며, 오버라이딩(@Override) 합니다.
+    @Override
+    public void run() {
+        for (int i = 10; i >= 0; i--) {
+            // 어떤 스레드가 실행 중인지 확인하기 위해 name을 함께 출력합니다.
+            System.out.println(name + " : " + i);
+            try {
+                // 가독성을 위해 출력 사이의 간격을 줍니다.
+                Thread.sleep(500); 
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+package day12;
+
+class MTread extends Thread {
+	public void run() {
+		for(int i = 10; i>= 0; i--)
+			System.out.println(i+"");
+	}
+}
+
+
+
+
+
+public class MTreadTsT{
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		Thread t= new MTread();
+		t.start();
+	}
+
+}
+
+
+package day12;
+
+public class TsTtread {
+
+    public static void main(String[] args) {
+        Thread t1 = new Thread(new MRunnable("A"));
+        Thread t2 = new Thread(new MRunnable("B"));
+        
+        // 스레드는 한 번만 start() 시킵니다.
+        t1.start();
+        t2.start();
+
+        try {
+            // 메인 스레드가 두 스레드가 종료될 때까지 기다리게 하려면 join()을 사용하거나,
+            // 간단한 확인을 위해 sleep을 걸 수 있습니다.
+            Thread.sleep(10000); 
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        
+        System.out.println("메인 스레드 종료");
+    }
+}
