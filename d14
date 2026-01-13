@@ -1,0 +1,311 @@
+package day13;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class MBDAO {
+
+    private final String url = "jdbc:mysql://localhost:3306/mtdb?serverTimezone=Asia/Seoul";
+    private final String id = "root";
+    private final String pwd = "qwer1234";
+
+    public MBDAO() {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("JDBC Driver 로딩 실패", e);
+        }
+    }
+
+    private Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(url, id, pwd);
+    }
+
+    // 1) 회원정보 입력(INSERT) - pw 제거
+    public int insert(MBDTO dto) {
+        String sql = "INSERT INTO member(username, dept, birth, email) VALUES(?, ?, ?, ?)";
+        try (Connection con = getConnection();
+             PreparedStatement psmt = con.prepareStatement(sql)) {
+
+            psmt.setString(1, dto.getUsername());
+            psmt.setString(2, dto.getDept());
+            psmt.setString(3, dto.getBirth());
+            psmt.setString(4, dto.getEmail());
+
+            return psmt.executeUpdate(); // 성공 1, 실패 0
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    // 2) 회원 전체 조회(SELECT)
+    public List<MBDTO> selectAll() {
+        String sql = "SELECT id, username, dept, birth, email FROM member";
+        List<MBDTO> list = new ArrayList<>();
+
+        try (Connection con = getConnection();
+             PreparedStatement psmt = con.prepareStatement(sql);
+             ResultSet rs = psmt.executeQuery()) {
+
+            while (rs.next()) {
+                MBDTO dto = new MBDTO();
+                dto.setId(rs.getInt("id"));
+                dto.setUsername(rs.getString("username"));
+                dto.setDept(rs.getString("dept"));
+                dto.setBirth(rs.getString("birth"));
+                dto.setEmail(rs.getString("email"));
+                list.add(dto);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
+    // 3) 회원 아이디로 조회(SELECT WHERE id=?)
+    public MBDTO selectById(int mid) {
+        String sql = "SELECT id, username, dept, birth, email FROM member WHERE id = ?";
+        try (Connection con = getConnection();
+             PreparedStatement psmt = con.prepareStatement(sql)) {
+
+            psmt.setInt(1, mid);
+
+            try (ResultSet rs = psmt.executeQuery()) {
+                if (rs.next()) {
+                    MBDTO dto = new MBDTO();
+                    dto.setId(rs.getInt("id"));
+                    dto.setUsername(rs.getString("username"));
+                    dto.setDept(rs.getString("dept"));
+                    dto.setBirth(rs.getString("birth"));
+                    dto.setEmail(rs.getString("email"));
+                    return dto;
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    // 4) 회원 정보 삭제(DELETE)
+    public int deleteById(int mid) {
+        String sql = "DELETE FROM member WHERE id = ?";
+        try (Connection con = getConnection();
+             PreparedStatement psmt = con.prepareStatement(sql)) {
+
+            psmt.setInt(1, mid);
+            return psmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    // 5) 회원 정보 수정(UPDATE)
+    public int updateInfo(MBDTO dto) {
+        String sql = "UPDATE member SET username=?, dept=?, birth=?, email=? WHERE id=?";
+        try (Connection con = getConnection();
+             PreparedStatement psmt = con.prepareStatement(sql)) {
+
+            psmt.setString(1, dto.getUsername());
+            psmt.setString(2, dto.getDept());
+            psmt.setString(3, dto.getBirth());
+            psmt.setString(4, dto.getEmail());
+            psmt.setInt(5, dto.getId());
+
+            return psmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+}
+
+package day13;
+
+public class MBDTO {
+    private int id;
+    private String username;
+    private String dept;
+    private String birth;
+    private String email;
+
+    public MBDTO() {}
+
+    public MBDTO(int id, String username, String dept, String birth, String email) {
+        this.id = id;
+        this.username = username;
+        this.dept = dept;
+        this.birth = birth;
+        this.email = email;
+    }
+
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
+
+    public String getDept() { return dept; }
+    public void setDept(String dept) { this.dept = dept; }
+
+    public String getBirth() { return birth; }
+    public void setBirth(String birth) { this.birth = birth; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    @Override
+    public String toString() {
+        return "=== Student INF ===\n"
+                + "ID    : " + id + "\n"
+                + "NAME  : " + username + "\n"
+                + "MAJOR : " + dept + "\n"
+                + "BIRTH : " + birth + "\n"
+                + "EMAIL : " + email + "\n";
+    }
+}
+
+package day13;
+
+import java.util.List;
+import java.util.Scanner;
+
+public class MBTST {
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        MBDAO dao = new MBDAO();
+
+        while (true) {
+            System.out.println("\n==== 회원관리 프로그램 ====");
+            System.out.println("1. 회원정보 입력");
+            System.out.println("2. 회원 조회(전체)");
+            System.out.println("3. 회원 아이디 조회");
+            System.out.println("4. 회원 정보 삭제");
+            System.out.println("5. 회원 정보 수정");
+            System.out.println("0. 종료");
+            System.out.print("메뉴 선택 >> ");
+
+            int menu;
+            try {
+                menu = Integer.parseInt(sc.nextLine());
+            } catch (Exception e) {
+                System.out.println("숫자로 입력하세요.");
+                continue;
+            }
+
+            if (menu == 0) {
+                System.out.println("프로그램 종료!");
+                break;
+            }
+
+            switch (menu) {
+
+                case 1: { // 회원정보 입력
+                    System.out.println("[회원정보 입력]");
+                    MBDTO dto = new MBDTO();
+
+                    System.out.print("이름(username) : ");
+                    dto.setUsername(sc.nextLine());
+
+                    System.out.print("학과(dept) : ");
+                    dto.setDept(sc.nextLine());
+
+                    System.out.print("생년월일(birth, 예: 2000-01-01) : ");
+                    dto.setBirth(sc.nextLine());
+
+                    System.out.print("이메일(email) : ");
+                    dto.setEmail(sc.nextLine());
+
+                    int result = dao.insert(dto);
+                    System.out.println(result == 1 ? "입력 성공!" : "입력 실패!");
+                    break;
+                }
+
+                case 2: { // 전체 조회
+                    System.out.println("[회원 조회(전체)]");
+                    List<MBDTO> list = dao.selectAll();
+
+                    if (list.isEmpty()) {
+                        System.out.println("조회된 회원이 없습니다.");
+                    } else {
+                        for (MBDTO dto : list) {
+                            System.out.println(dto);
+                        }
+                    }
+                    break;
+                }
+
+                case 3: { // 아이디로 조회
+                    System.out.println("[회원 아이디 조회]");
+                    System.out.print("조회할 회원 ID : ");
+                    int mid = Integer.parseInt(sc.nextLine());
+
+                    MBDTO dto = dao.selectById(mid);
+                    if (dto == null) {
+                        System.out.println("해당 ID의 회원이 없습니다.");
+                    } else {
+                        System.out.println(dto);
+                    }
+                    break;
+                }
+
+                case 4: { // 삭제
+                    System.out.println("[회원 정보 삭제]");
+                    System.out.print("삭제할 회원 ID : ");
+                    int mid = Integer.parseInt(sc.nextLine());
+
+                    int result = dao.deleteById(mid);
+                    System.out.println(result == 1 ? "삭제 성공!" : "삭제 실패(없는 ID)!");
+                    break;
+                }
+
+                case 5: { // 수정
+                    System.out.println("[회원 정보 수정]");
+                    System.out.print("수정할 회원 ID : ");
+                    int mid = Integer.parseInt(sc.nextLine());
+
+                    // 수정 전에 존재 확인
+                    MBDTO old = dao.selectById(mid);
+                    if (old == null) {
+                        System.out.println("해당 ID의 회원이 없습니다.");
+                        break;
+                    }
+
+                    MBDTO dto = new MBDTO();
+                    dto.setId(mid);
+
+                    System.out.print("새 이름(username) : ");
+                    dto.setUsername(sc.nextLine());
+
+                    System.out.print("새 학과(dept) : ");
+                    dto.setDept(sc.nextLine());
+
+                    System.out.print("새 생년월일(birth, 예: 2000-01-01) : ");
+                    dto.setBirth(sc.nextLine());
+
+                    System.out.print("새 이메일(email) : ");
+                    dto.setEmail(sc.nextLine());
+
+                    int result = dao.updateInfo(dto);
+                    System.out.println(result == 1 ? "수정 성공!" : "수정 실패!");
+                    break;
+                }
+
+                default:
+                    System.out.println("없는 메뉴입니다.");
+            }
+        }
+
+        sc.close();
+    }
+}
